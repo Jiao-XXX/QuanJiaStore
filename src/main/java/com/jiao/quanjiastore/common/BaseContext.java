@@ -20,7 +20,8 @@ public class BaseContext {
      * 获取值
      * @return
      */
-    static Long getCurrentId(){
+    public static Long getCurrentId(){
         return threadLocal.get();
     }
+
 }

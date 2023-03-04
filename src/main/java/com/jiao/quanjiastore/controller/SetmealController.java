@@ -3,11 +3,14 @@ package com.jiao.quanjiastore.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jiao.quanjiastore.common.R;
+import com.jiao.quanjiastore.dto.DishDto;
 import com.jiao.quanjiastore.dto.SetmealDto;
 import com.jiao.quanjiastore.entity.Category;
+import com.jiao.quanjiastore.entity.Dish;
 import com.jiao.quanjiastore.entity.Setmeal;
 import com.jiao.quanjiastore.entity.SetmealDish;
 import com.jiao.quanjiastore.service.CategoryService;
+import com.jiao.quanjiastore.service.DishService;
 import com.jiao.quanjiastore.service.SetmealDishService;
 import com.jiao.quanjiastore.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +39,8 @@ public class SetmealController {
 
     @Autowired
     private SetmealDishService setmealDishService;
+
+    private DishService dishService;
 
     @Autowired
     private CategoryService categoryService;
@@ -117,7 +122,7 @@ public class SetmealController {
     }
 
     /**
-     * 套餐商品操作
+     * 根据条件查询套餐数据
      * @param setmeal
      * @return
      */
@@ -190,4 +195,18 @@ public class SetmealController {
 
         return R.success("套餐修改成功");
     }
+
+    /**
+     * 点击套餐图片查看套餐具体内容
+     * @param id
+     * @return
+     */
+    @GetMapping("/dish/{id}")
+    public R<List<DishDto>> dish(@PathVariable("id") Long id) {
+
+        List<DishDto> dishDtos = setmealService.getDish(id);
+
+        return R.success(dishDtos);
+    }
 }
+

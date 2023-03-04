@@ -3,10 +3,14 @@ package com.jiao.quanjiastore.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jiao.quanjiastore.common.CustomException;
+import com.jiao.quanjiastore.dto.DishDto;
 import com.jiao.quanjiastore.dto.SetmealDto;
+import com.jiao.quanjiastore.entity.Dish;
 import com.jiao.quanjiastore.entity.Setmeal;
 import com.jiao.quanjiastore.entity.SetmealDish;
 import com.jiao.quanjiastore.mapper.SetmealMapper;
+import com.jiao.quanjiastore.service.CategoryService;
+import com.jiao.quanjiastore.service.DishService;
 import com.jiao.quanjiastore.service.SetmealDishService;
 import com.jiao.quanjiastore.service.SetmealService;
 import org.springframework.beans.BeanUtils;
@@ -26,12 +30,16 @@ import java.util.stream.Collectors;
 public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> implements SetmealService {
 
     @Autowired
+    private SetmealService setmealService;
+
+    @Autowired
     private SetmealDishService setmealDishService;
 
-    /**
-     * 新增套餐，同时需要保存套餐和商品的关联关系
-     * @param setmealDto
-     */
+    private DishService dishService;
+
+    @Autowired
+    private CategoryService categoryService;
+
     @Override
     @Transactional
     public void saveWithDish(SetmealDto setmealDto) {
@@ -48,10 +56,6 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         setmealDishService.saveBatch(setmealDishes);
     }
 
-    /**
-     * 删除套餐，同时需要删除套餐和商品的关联数据
-     * @param ids
-     */
     @Override
     @Transactional
     public void removeWithDish(List<Long> ids) {
@@ -77,12 +81,6 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         setmealDishService.remove(lambdaQueryWrapper);
     }
 
-
-    /**
-     * 根据套餐id修改售卖状态
-     * @param status
-     * @param ids
-     */
     @Override
     public void updateSetmealStatusById(Integer status,  List<Long> ids) {
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper();
@@ -97,10 +95,6 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         }
     }
 
-    /**
-     * 回显套餐数据：根据套餐id查询套餐
-     * @return
-     */
     @Override
     public SetmealDto getDate(Long id) {
         Setmeal setmeal = this.getById(id);
@@ -116,6 +110,32 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
             return setmealDto;
         }
         return null;
+    }
+
+
+    @Override
+    public List<DishDto> getDish(Long id) {
+        LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SetmealDish::getSetmealId, id);
+
+        // 获得数据
+        List<SetmealDish> list = setmealDishService.list(queryWrapper);
+
+        List<DishDto> dishDtos = list.stream().map((setmealDish) -> {
+            DishDto dishDto = new DishDto();
+
+            // 基本信息拷贝
+            BeanUtils.copyProperties(setmealDish, dishDto);
+
+            // 设置其他信息
+            Long dishId = setmealDish.getDishId();
+            Dish dish = dishService.getById(dishId);
+            BeanUtils.copyProperties(dish, dishDto);
+
+            return dishDto;
+        }).collect(Collectors.toList());
+
+        return dishDtos;
     }
 
 }
