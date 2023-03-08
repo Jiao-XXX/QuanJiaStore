@@ -40,6 +40,10 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     @Autowired
     private CategoryService categoryService;
 
+    /**
+     * 新增套餐，同时需要保存套餐和商品的关联关系
+     * @param setmealDto
+     */
     @Override
     @Transactional
     public void saveWithDish(SetmealDto setmealDto) {
@@ -56,6 +60,10 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         setmealDishService.saveBatch(setmealDishes);
     }
 
+    /**
+     * 删除套餐，同时需要删除套餐和商品的关联数据
+     * @param ids
+     */
     @Override
     @Transactional
     public void removeWithDish(List<Long> ids) {
@@ -81,6 +89,11 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         setmealDishService.remove(lambdaQueryWrapper);
     }
 
+    /**
+     * 根据套餐id修改售卖状态
+     * @param status
+     * @param ids
+     */
     @Override
     public void updateSetmealStatusById(Integer status,  List<Long> ids) {
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper();
@@ -95,6 +108,11 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         }
     }
 
+    /**
+     * 回显套餐数据：根据套餐id查询套餐
+     * @param id
+     * @return
+     */
     @Override
     public SetmealDto getDate(Long id) {
         Setmeal setmeal = this.getById(id);
@@ -113,6 +131,11 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     }
 
 
+    /**
+     * 根据套餐id查询套餐具体内容
+     * @param id
+     * @return
+     */
     @Override
     public List<DishDto> getDish(Long id) {
         LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper<>();
