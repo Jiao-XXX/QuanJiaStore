@@ -8,4 +8,7 @@ import com.jiao.quanjiastore.entity.AddressBook;
  * @Date: 2023/3/4 15:22
  */
 public interface AddressBookService extends IService<AddressBook> {
+
+    //设置默认地址
+    public void setDefault(AddressBook addressBook);
 }

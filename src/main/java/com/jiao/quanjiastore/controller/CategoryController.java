@@ -47,12 +47,11 @@ public class CategoryController {
      */
     @GetMapping("/page")
     public R<Page> page(int page, int pageSize){
-        //构造分页构造器
+        //构造条件分页构造器
         Page<Category> pageInfo = new Page<>(page,pageSize);
-        //构造条件构造器
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
-        //添加排序条件
         queryWrapper.orderByAsc(Category::getSort);
+
         //执行查询
         categoryService.page(pageInfo,queryWrapper);
         return R.success(pageInfo);
@@ -96,9 +95,7 @@ public class CategoryController {
 
         //条件构造器
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
-        //添加条件
         queryWrapper.eq(category.getType() != null,Category::getType,category.getType());
-        //添加排序条件
         queryWrapper.orderByAsc(Category::getSort).orderByDesc(Category::getUpdateTime);
 
         List<Category> list = categoryService.list(queryWrapper);

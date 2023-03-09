@@ -9,4 +9,7 @@ import com.jiao.quanjiastore.entity.User;
  */
 
 public interface UserService extends IService<User> {
+
+    // 移动端用户登录
+    public User login(String phone);
 }
